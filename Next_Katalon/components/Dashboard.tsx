@@ -91,7 +91,7 @@ export default function Dashboard({ projectPath, onError }: DashboardProps): JSX
               <Tab.Pane eventKey="overview">
                 <div>
                   <SummaryCards summary={dashboardData.summary} onCardClick={(k) => setActiveTab(k)} />
-                  <CoverageSection coverage={dashboardData.coverage} />
+                  <CoverageSection coverage={dashboardData.coverage} onCardClick={(k) => setActiveTab(k)} />
                 </div>
               </Tab.Pane>
 
