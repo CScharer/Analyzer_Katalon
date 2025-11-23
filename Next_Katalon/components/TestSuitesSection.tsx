@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, Table, Pagination, Badge } from 'react-bootstrap'
-import { getTestSuites } from '@/lib/api'
+import { Card, Table, Pagination, Badge, Form, InputGroup, Button } from 'react-bootstrap'
+import { getTestSuites, searchTestSuites } from '@/lib/api'
 import LoadingSpinner from './LoadingSpinner'
 
 interface TestSuitesSectionProps {
@@ -14,6 +14,8 @@ export default function TestSuitesSection({ projectPath }: TestSuitesSectionProp
   const [loading, setLoading] = useState<boolean>(true)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [total, setTotal] = useState<number>(0)
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [error, setError] = useState<string>('')
   const itemsPerPage = 10
 
   useEffect(() => {
@@ -23,12 +25,48 @@ export default function TestSuitesSection({ projectPath }: TestSuitesSectionProp
   const loadTestSuites = async (): Promise<void> => {
     try {
       setLoading(true)
+      setError('')
       const offset = (currentPage - 1) * itemsPerPage
       const data = await getTestSuites(projectPath, itemsPerPage, offset)
       setTestSuites(data.test_suites || [])
       setTotal(data.total || 0)
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error loading test suites'
+      setError(message)
       console.error('Error loading test suites:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSearch = async (): Promise<void> => {
+    if (!searchQuery.trim()) {
+      setSearchQuery('')
+      loadTestSuites()
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError('')
+      const data = await searchTestSuites(projectPath, searchQuery)
+      setTestSuites(data.results || [])
+      setTotal(data.count || 0)
+      setCurrentPage(1)
+    } catch (error) {
+      let message = 'Error searching test suites'
+      try {
+        if (error && typeof error === 'object' && 'message' in error) {
+          const errMsg: string = (error as any).message
+          if (errMsg.includes('Project path does not exist')) {
+            message = 'Project not found on the server. Please re-select the project in the Project selector.'
+          } else {
+            message = errMsg
+          }
+        }
+      } catch (_) {}
+      setError(message)
+      console.error('Error searching test suites:', error)
     } finally {
       setLoading(false)
     }
@@ -41,7 +79,38 @@ export default function TestSuitesSection({ projectPath }: TestSuitesSectionProp
   }
 
   return (
-    <Card>
+    <div>
+      <Card className="mb-3">
+        <Card.Body>
+          {error && (
+            <div className="alert alert-danger mb-3" role="alert">
+              {error}
+            </div>
+          )}
+          <InputGroup>
+            <Form.Control
+              type="text"
+              placeholder="Search test suites..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <Button variant="primary" onClick={handleSearch}>
+              Search
+            </Button>
+            {searchQuery && (
+              <Button variant="outline-secondary" onClick={() => {
+                setSearchQuery('')
+                loadTestSuites()
+              }}>
+                Clear
+              </Button>
+            )}
+          </InputGroup>
+        </Card.Body>
+      </Card>
+
+      <Card>
       <Card.Header>
         <Card.Title className="h6 mb-0">Test Suites ({total})</Card.Title>
       </Card.Header>
@@ -136,6 +205,7 @@ export default function TestSuitesSection({ projectPath }: TestSuitesSectionProp
         )}
       </Card.Body>
     </Card>
+    </div>
   )
 }
 

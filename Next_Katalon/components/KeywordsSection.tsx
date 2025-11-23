@@ -15,6 +15,7 @@ export default function KeywordsSection({ projectPath }: KeywordsSectionProps): 
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [total, setTotal] = useState<number>(0)
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [error, setError] = useState<string>('')
   const itemsPerPage = 10
 
   useEffect(() => {
@@ -24,11 +25,14 @@ export default function KeywordsSection({ projectPath }: KeywordsSectionProps): 
   const loadKeywords = async (): Promise<void> => {
     try {
       setLoading(true)
+      setError('')
       const offset = (currentPage - 1) * itemsPerPage
       const data = await getKeywords(projectPath, itemsPerPage, offset)
       setKeywords(data.keywords || [])
       setTotal(data.total || 0)
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error loading keywords'
+      setError(message)
       console.error('Error loading keywords:', error)
     } finally {
       setLoading(false)
@@ -37,17 +41,44 @@ export default function KeywordsSection({ projectPath }: KeywordsSectionProps): 
 
   const handleSearch = async (): Promise<void> => {
     if (!searchQuery.trim()) {
+      setSearchQuery('')
       loadKeywords()
       return
     }
 
     try {
       setLoading(true)
+      setError('')
       const data = await searchKeywords(projectPath, searchQuery)
-      setKeywords(data.results?.map((r: any) => r.file) || [])
-      setTotal(data.count || 0)
+      // The backend returns results as { keyword, file } entries. Group/deduplicate files by path.
+      const fileMap = new Map<string, any>()
+      if (data.results && Array.isArray(data.results)) {
+        data.results.forEach((result: any) => {
+          const file = result.file
+          const key = file?.relative_path || JSON.stringify(file)
+          if (!fileMap.has(key)) fileMap.set(key, file)
+        })
+      }
+      const files = Array.from(fileMap.values())
+      setKeywords(files)
+      setTotal(files.length)
       setCurrentPage(1)
     } catch (error) {
+      let message = 'Error searching keywords'
+      try {
+        if (error && typeof error === 'object' && 'message' in error) {
+          // prefer the thrown Error message (lib/api now surfaces backend info)
+          // @ts-ignore
+          const errMsg: string = error.message
+          // If backend reports project not found, show a friendly instruction
+          if (errMsg.includes('Project path does not exist')) {
+            message = 'Project not found on the server. Please re-select the project in the Project selector.'
+          } else {
+            message = errMsg
+          }
+        }
+      } catch (_) {}
+      setError(message)
       console.error('Error searching keywords:', error)
     } finally {
       setLoading(false)
@@ -64,6 +95,11 @@ export default function KeywordsSection({ projectPath }: KeywordsSectionProps): 
     <div>
       <Card className="mb-3">
         <Card.Body>
+          {error && (
+            <div className="alert alert-danger mb-3" role="alert">
+              {error}
+            </div>
+          )}
           <InputGroup>
             <Form.Control
               type="text"

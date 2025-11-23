@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, Table, Pagination, Badge, Accordion } from 'react-bootstrap'
-import { getObjectRepository } from '@/lib/api'
+import { Card, Table, Pagination, Badge, Form, InputGroup, Button, Accordion } from 'react-bootstrap'
+import { getObjectRepository, searchObjectRepository } from '@/lib/api'
 import LoadingSpinner from './LoadingSpinner'
 
 interface ObjectRepositorySectionProps {
@@ -14,6 +14,8 @@ export default function ObjectRepositorySection({ projectPath }: ObjectRepositor
   const [loading, setLoading] = useState<boolean>(true)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [total, setTotal] = useState<number>(0)
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [error, setError] = useState<string>('')
   const itemsPerPage = 10
 
   useEffect(() => {
@@ -23,12 +25,48 @@ export default function ObjectRepositorySection({ projectPath }: ObjectRepositor
   const loadObjects = async (): Promise<void> => {
     try {
       setLoading(true)
+      setError('')
       const offset = (currentPage - 1) * itemsPerPage
       const data = await getObjectRepository(projectPath, itemsPerPage, offset)
       setObjects(data.objects || [])
       setTotal(data.total || 0)
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error loading objects'
+      setError(message)
       console.error('Error loading objects:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSearch = async (): Promise<void> => {
+    if (!searchQuery.trim()) {
+      setSearchQuery('')
+      loadObjects()
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError('')
+      const data = await searchObjectRepository(projectPath, searchQuery)
+      setObjects(data.results || [])
+      setTotal(data.count || 0)
+      setCurrentPage(1)
+    } catch (error) {
+      let message = 'Error searching objects'
+      try {
+        if (error && typeof error === 'object' && 'message' in error) {
+          const errMsg: string = (error as any).message
+          if (errMsg.includes('Project path does not exist')) {
+            message = 'Project not found on the server. Please re-select the project in the Project selector.'
+          } else {
+            message = errMsg
+          }
+        }
+      } catch (_) {}
+      setError(message)
+      console.error('Error searching objects:', error)
     } finally {
       setLoading(false)
     }
@@ -54,11 +92,42 @@ export default function ObjectRepositorySection({ projectPath }: ObjectRepositor
   }
 
   return (
-    <Card>
-      <Card.Header>
-        <Card.Title className="h6 mb-0">Object Repository ({total})</Card.Title>
-      </Card.Header>
-      <Card.Body>
+    <div>
+      <Card className="mb-3">
+        <Card.Body>
+          {error && (
+            <div className="alert alert-danger mb-3" role="alert">
+              {error}
+            </div>
+          )}
+          <InputGroup>
+            <Form.Control
+              type="text"
+              placeholder="Search objects..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <Button variant="primary" onClick={handleSearch}>
+              Search
+            </Button>
+            {searchQuery && (
+              <Button variant="outline-secondary" onClick={() => {
+                setSearchQuery('')
+                loadObjects()
+              }}>
+                Clear
+              </Button>
+            )}
+          </InputGroup>
+        </Card.Body>
+      </Card>
+
+      <Card>
+        <Card.Header>
+          <Card.Title className="h6 mb-0">Object Repository ({total})</Card.Title>
+        </Card.Header>
+        <Card.Body>
         {objects.length === 0 ? (
           <p className="text-muted text-center py-4">No objects found</p>
         ) : (
@@ -173,6 +242,7 @@ export default function ObjectRepositorySection({ projectPath }: ObjectRepositor
         )}
       </Card.Body>
     </Card>
+    </div>
   )
 }
 

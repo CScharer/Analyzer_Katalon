@@ -15,6 +15,7 @@ export default function TestCasesSection({ projectPath }: TestCasesSectionProps)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [total, setTotal] = useState<number>(0)
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [error, setError] = useState<string>('')
   const itemsPerPage = 10
 
   useEffect(() => {
@@ -24,11 +25,14 @@ export default function TestCasesSection({ projectPath }: TestCasesSectionProps)
   const loadTestCases = async (): Promise<void> => {
     try {
       setLoading(true)
+      setError('')
       const offset = (currentPage - 1) * itemsPerPage
       const data = await getTestCases(projectPath, itemsPerPage, offset)
       setTestCases(data.test_cases || [])
       setTotal(data.total || 0)
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error loading test cases'
+      setError(message)
       console.error('Error loading test cases:', error)
     } finally {
       setLoading(false)
@@ -37,17 +41,31 @@ export default function TestCasesSection({ projectPath }: TestCasesSectionProps)
 
   const handleSearch = async (): Promise<void> => {
     if (!searchQuery.trim()) {
+      setSearchQuery('')
       loadTestCases()
       return
     }
 
     try {
       setLoading(true)
+      setError('')
       const data = await searchTestCases(projectPath, searchQuery)
       setTestCases(data.results || [])
       setTotal(data.count || 0)
       setCurrentPage(1)
     } catch (error) {
+      let message = 'Error searching test cases'
+      try {
+        if (error && typeof error === 'object' && 'message' in error) {
+          const errMsg: string = (error as any).message
+          if (errMsg.includes('Project path does not exist')) {
+            message = 'Project not found on the server. Please re-select the project in the Project selector.'
+          } else {
+            message = errMsg
+          }
+        }
+      } catch (_) {}
+      setError(message)
       console.error('Error searching test cases:', error)
     } finally {
       setLoading(false)
@@ -64,6 +82,11 @@ export default function TestCasesSection({ projectPath }: TestCasesSectionProps)
     <div>
       <Card className="mb-3">
         <Card.Body>
+          {error && (
+            <div className="alert alert-danger mb-3" role="alert">
+              {error}
+            </div>
+          )}
           <InputGroup>
             <Form.Control
               type="text"

@@ -225,6 +225,40 @@ class KatalonAnalyzerAPI:
             'results': results
         }
     
+    def search_test_suites(self, query: str) -> Dict[str, Any]:
+        """
+        Search test suites.
+        
+        Args:
+            query: Search query string
+        
+        Returns:
+            Dictionary with search results
+        """
+        results = self.analyzer.search_test_suites(query)
+        return {
+            'query': query,
+            'count': len(results),
+            'results': results
+        }
+    
+    def search_object_repository(self, query: str) -> Dict[str, Any]:
+        """
+        Search object repository.
+        
+        Args:
+            query: Search query string
+        
+        Returns:
+            Dictionary with search results
+        """
+        results = self.analyzer.search_object_repository(query)
+        return {
+            'query': query,
+            'count': len(results),
+            'results': results
+        }
+    
     def get_dashboard_data(self) -> Dict[str, Any]:
         """
         Get all data needed for a dashboard view.

@@ -254,6 +254,51 @@ class KatalonProjectAnalyzer:
         
         return results
     
+    def search_test_suites(self, query: str) -> List[Dict[str, Any]]:
+        """
+        Search test suites by name or description.
+        
+        Args:
+            query: Search query string
+        
+        Returns:
+            List of matching test suites
+        """
+        query_lower = query.lower()
+        results = []
+        
+        for test_suite in self.test_suites.values():
+            name = test_suite.get('name', '').lower()
+            description = test_suite.get('description', '').lower()
+            if query_lower in name or query_lower in description:
+                results.append(test_suite)
+        
+        return results
+    
+    def search_object_repository(self, query: str) -> List[Dict[str, Any]]:
+        """
+        Search object repository objects by name or type.
+        
+        Args:
+            query: Search query string
+        
+        Returns:
+            List of matching objects
+        """
+        query_lower = query.lower()
+        results = []
+        
+        for obj in self.object_repository.values():
+            name = obj.get('name', '').lower()
+            element_type = obj.get('element_type', '').lower()
+            selector_method = obj.get('selector_method', '').lower()
+            if (query_lower in name or 
+                query_lower in element_type or 
+                query_lower in selector_method):
+                results.append(obj)
+        
+        return results
+    
     def get_test_case_by_name(self, name: str) -> Optional[Dict[str, Any]]:
         """
         Get a test case by its name.
