@@ -219,9 +219,14 @@ async def get_profiles_query(project_path: str = Query(...), q: Optional[str] = 
             if ql in name.lower():
                 return True
             vars = p.get('global_variables', {}) or {}
-            for v in vars.values():
-                if ql in str(v).lower():
-                    return True
+            if isinstance(vars, dict):
+                for v in vars.values():
+                    if ql in str(v).lower():
+                        return True
+            elif isinstance(vars, list):
+                for v in vars:
+                    if ql in str(v).lower():
+                        return True
             return False
         profiles = [p for p in profiles if matches(p)]
     return {'query': q or '', 'count': len(profiles), 'results': profiles}

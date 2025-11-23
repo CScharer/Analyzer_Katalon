@@ -135,15 +135,31 @@ export async function getProfiles(projectPath: string, q?: string) {
   const params = new URLSearchParams()
   params.append('project_path', projectPath)
   if (q) params.append('q', q)
-  const response = await axios.get(`${API_BASE_URL}/api/project/profiles?${params}`)
-  return response.data
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/project/profiles?${params}`)
+    return response.data
+  } catch (err: any) {
+    if (axios.isAxiosError(err)) {
+      const info = err.response?.data?.detail || err.response?.data || err.response?.statusText || err.message
+      throw new Error(`API Error (${err.response?.status || 'unknown'}): ${JSON.stringify(info)}`)
+    }
+    throw err
+  }
 }
 
 export async function getScripts(projectPath: string, q?: string) {
   const params = new URLSearchParams()
   params.append('project_path', projectPath)
   if (q) params.append('q', q)
-  const response = await axios.get(`${API_BASE_URL}/api/project/scripts?${params}`)
-  return response.data
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/project/scripts?${params}`)
+    return response.data
+  } catch (err: any) {
+    if (axios.isAxiosError(err)) {
+      const info = err.response?.data?.detail || err.response?.data || err.response?.statusText || err.message
+      throw new Error(`API Error (${err.response?.status || 'unknown'}): ${JSON.stringify(info)}`)
+    }
+    throw err
+  }
 }
 
