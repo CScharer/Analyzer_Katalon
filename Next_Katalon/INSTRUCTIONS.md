@@ -51,3 +51,9 @@
 - Comprehensive data-qa tagging for test automation
 - All endpoints tested and verified working correctly
 - All changes committed and pushed to feature/instructions-data-qa branch
+
+# New Functionality - Phase 2
+## Coverage Analysis Click Navigation
+- Test Case Coverage Analysis should take you to the Test Cases tab when clicked
+- Object Repository Coverage Analysis should take you to the Object Repository tab when clicked
+- Keywords Analysis should take you to the Keywords tab when clicked
