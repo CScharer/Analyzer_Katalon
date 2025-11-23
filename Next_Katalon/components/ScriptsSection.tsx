@@ -43,7 +43,9 @@ export default function ScriptsSection({ projectPath }: ScriptsSectionProps): JS
               onChange={(e) => setQ(e.target.value)}
               data-qa="scripts-search-input"
             />
-            <Button variant="outline-secondary" onClick={() => load(q)} data-qa="scripts-search-button">{loading ? <Spinner animation="border" size="sm" /> : 'Search'}</Button>
+            <Button variant="primary" onClick={() => load(q)} data-qa="scripts-search-button">
+              {loading ? <><Spinner animation="border" size="sm" className="me-2" />Searching</> : 'Search'}
+            </Button>
           </InputGroup>
         </div>
       </Card.Header>

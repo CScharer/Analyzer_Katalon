@@ -43,7 +43,9 @@ export default function ProfilesSection({ projectPath }: ProfilesSectionProps): 
               onChange={(e) => setQ(e.target.value)}
               data-qa="profiles-search-input"
             />
-            <Button variant="outline-secondary" onClick={() => load(q)} data-qa="profiles-search-button">{loading ? <Spinner animation="border" size="sm" /> : 'Search'}</Button>
+            <Button variant="primary" onClick={() => load(q)} data-qa="profiles-search-button">
+              {loading ? <><Spinner animation="border" size="sm" className="me-2" />Searching</> : 'Search'}
+            </Button>
           </InputGroup>
         </div>
       </Card.Header>
