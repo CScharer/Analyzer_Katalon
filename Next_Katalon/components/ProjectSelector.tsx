@@ -73,12 +73,12 @@ export default function ProjectSelector({ onProjectSelect, currentPath }: Projec
   return (
     <Card>
       <Card.Header>
-        <Card.Title className="mb-0">Select Project</Card.Title>
+        <Card.Title className="mb-0" data-qa="project-selector-title">Select Project</Card.Title>
       </Card.Header>
       <Card.Body>
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Project Path</Form.Label>
+            <Form.Label data-qa="project-selector-label">Project Path</Form.Label>
             <InputGroup>
               <Form.Control
                 type="text"
@@ -86,47 +86,49 @@ export default function ProjectSelector({ onProjectSelect, currentPath }: Projec
                 onChange={(e) => setInputPath(e.target.value)}
                 placeholder="/path/to/katalon/project"
                 size="lg"
+                data-qa="project-path-input"
               />
-              <Button variant="primary" type="submit" size="lg" disabled={loading}>
+              <Button variant="primary" type="submit" size="lg" disabled={loading} data-qa="project-analyze-button">
                 {loading ? (
-                  <><Spinner animation="border" size="sm" className="me-2" />Analyzing</>
+                  <><Spinner animation="border" size="sm" className="me-2" data-qa="project-analyzing-spinner" />Analyzing</>
                 ) : (
                   'Analyze'
                 )}
               </Button>
             </InputGroup>
-            <Form.Text className="text-muted">
+            <Form.Text className="text-muted" data-qa="project-help-text">
               Enter the full path to your Katalon Studio project directory
             </Form.Text>
           </Form.Group>
         </Form>
 
         {error && (
-          <div className="alert alert-danger" role="alert">{error}</div>
+          <div className="alert alert-danger" role="alert" data-qa="project-error">{error}</div>
         )}
 
         {recentProjects.length > 0 && (
           <div className="mt-4">
             <div className="d-flex justify-content-between align-items-center mb-2">
-              <h6 className="text-muted mb-0">Recent Projects</h6>
+              <h6 className="text-muted mb-0" data-qa="recent-projects-title">Recent Projects</h6>
               <div>
-                <Button variant="outline-secondary" size="sm" onClick={clearAllRecent} className="me-2">
+                <Button variant="outline-secondary" size="sm" onClick={clearAllRecent} className="me-2" data-qa="recent-clear-button">
                   Clear All
                 </Button>
               </div>
             </div>
             <div className="d-flex flex-wrap gap-2">
               {recentProjects.map((path, index) => (
-                <div key={index} className="d-inline-flex align-items-center border rounded px-2 py-1">
+                <div key={index} className="d-inline-flex align-items-center border rounded px-2 py-1" data-qa={`recent-project-row-${index}`}>
                   <Button
                     variant="link"
                     size="sm"
                     onClick={() => handleRecentClick(path)}
                     className="p-0 me-2"
+                    data-qa={`recent-project-button-${index}`}
                   >
                     {path.split('/').pop() || path}
                   </Button>
-                  <CloseButton onClick={() => removeRecent(path)} />
+                  <CloseButton onClick={() => removeRecent(path)} data-qa={`recent-project-remove-${index}`} />
                 </div>
               ))}
             </div>

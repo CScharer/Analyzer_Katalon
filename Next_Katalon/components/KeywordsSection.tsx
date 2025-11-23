@@ -96,7 +96,7 @@ export default function KeywordsSection({ projectPath }: KeywordsSectionProps): 
       <Card className="mb-3">
         <Card.Body>
           {error && (
-            <div className="alert alert-danger mb-3" role="alert">
+            <div className="alert alert-danger mb-3" role="alert" data-qa="keywords-error">
               {error}
             </div>
           )}
@@ -107,15 +107,16 @@ export default function KeywordsSection({ projectPath }: KeywordsSectionProps): 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              data-qa="keywords-search-input"
             />
-            <Button variant="primary" onClick={handleSearch}>
+            <Button variant="primary" onClick={handleSearch} data-qa="keywords-search-button">
               Search
             </Button>
             {searchQuery && (
               <Button variant="outline-secondary" onClick={() => {
                 setSearchQuery('')
                 loadKeywords()
-              }}>
+              }} data-qa="keywords-clear-button">
                 Clear
               </Button>
             )}
@@ -125,40 +126,40 @@ export default function KeywordsSection({ projectPath }: KeywordsSectionProps): 
 
       <Card>
         <Card.Header>
-          <Card.Title className="h6 mb-0">Keywords ({total})</Card.Title>
+          <Card.Title className="h6 mb-0" data-qa="keywords-title">Keywords ({total})</Card.Title>
         </Card.Header>
         <Card.Body>
           {keywords.length === 0 ? (
-            <p className="text-muted text-center py-4">No keywords found</p>
+            <p className="text-muted text-center py-4" data-qa="keywords-empty">No keywords found</p>
           ) : (
             <>
-              <Table striped hover responsive>
+              <Table striped hover responsive data-qa="keywords-table">
                 <thead>
                   <tr>
-                    <th>Package</th>
-                    <th>File</th>
-                    <th>Keywords</th>
-                    <th>Imports</th>
+                    <th data-qa="keywords-col-package">Package</th>
+                    <th data-qa="keywords-col-file">File</th>
+                    <th data-qa="keywords-col-keywords">Keywords</th>
+                    <th data-qa="keywords-col-imports">Imports</th>
                   </tr>
                 </thead>
                 <tbody>
                   {keywords.map((kwFile, index) => (
-                    <tr key={index}>
-                      <td>
+                    <tr key={index} data-qa={`keyword-row-${index}`}>
+                      <td data-qa={`keyword-package-${index}`}>
                         {kwFile.package ? (
-                          <Badge bg="primary">{kwFile.package}</Badge>
+                          <Badge bg="primary" data-qa={`keyword-badge-package-${index}`}>{kwFile.package}</Badge>
                         ) : (
                           '-'
                         )}
                       </td>
-                      <td>
+                      <td data-qa={`keyword-file-${index}`}>
                         <small className="text-muted">{kwFile.relative_path || '-'}</small>
                       </td>
-                      <td>
+                      <td data-qa={`keyword-keywords-${index}`}>
                         {kwFile.keywords?.length > 0 ? (
                           <div>
                             {kwFile.keywords.map((kw: any, idx: number) => (
-                              <Badge key={idx} bg="info" className="me-1">
+                              <Badge key={idx} bg="info" className="me-1" data-qa={`keyword-badge-${index}-${idx}`}>
                                 {kw.name}
                               </Badge>
                             ))}
@@ -167,8 +168,8 @@ export default function KeywordsSection({ projectPath }: KeywordsSectionProps): 
                           '-'
                         )}
                       </td>
-                      <td>
-                        <small className="text-muted">
+                      <td data-qa={`keyword-imports-${index}`}>
+                        <small className="text-muted" data-qa={`keyword-imports-count-${index}`}>
                           {kwFile.imports?.length || 0} imports
                         </small>
                       </td>
@@ -178,15 +179,17 @@ export default function KeywordsSection({ projectPath }: KeywordsSectionProps): 
               </Table>
 
               {totalPages > 1 && (
-                <div className="d-flex justify-content-center mt-3">
+                <div className="d-flex justify-content-center mt-3" data-qa="keywords-pagination">
                   <Pagination>
                     <Pagination.First 
                       onClick={() => setCurrentPage(1)} 
                       disabled={currentPage === 1}
+                      data-qa="keywords-pg-first"
                     />
                     <Pagination.Prev 
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
                       disabled={currentPage === 1}
+                      data-qa="keywords-pg-prev"
                     />
                     {Array.from({ length: totalPages }, (_, i) => i + 1)
                       .filter(page => 
@@ -197,11 +200,12 @@ export default function KeywordsSection({ projectPath }: KeywordsSectionProps): 
                       .map((page, idx, arr) => (
                         <div key={page}>
                           {idx > 0 && arr[idx - 1] !== page - 1 && (
-                            <Pagination.Ellipsis />
+                            <Pagination.Ellipsis data-qa={`keywords-pg-ellipsis-${idx}`} />
                           )}
                           <Pagination.Item
                             active={page === currentPage}
                             onClick={() => setCurrentPage(page)}
+                            data-qa={`keywords-pg-item-${page}`}
                           >
                             {page}
                           </Pagination.Item>
@@ -210,10 +214,12 @@ export default function KeywordsSection({ projectPath }: KeywordsSectionProps): 
                     <Pagination.Next 
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
                       disabled={currentPage === totalPages}
+                      data-qa="keywords-pg-next"
                     />
                     <Pagination.Last 
                       onClick={() => setCurrentPage(totalPages)} 
                       disabled={currentPage === totalPages}
+                      data-qa="keywords-pg-last"
                     />
                   </Pagination>
                 </div>

@@ -207,6 +207,53 @@ async def get_coverage_query(project_path: str = Query(...)):
     return analyzer.get_coverage_analysis()
 
 
+@app.get("/api/project/profiles")
+async def get_profiles_query(project_path: str = Query(...), q: Optional[str] = Query(None)):
+    """Get profiles (query param version) with optional search filter."""
+    analyzer = get_analyzer(project_path)
+    profiles = list(analyzer.get_profiles().values())
+    if q:
+        ql = q.lower()
+        def matches(p):
+            name = p.get('name', '') or ''
+            if ql in name.lower():
+                return True
+            vars = p.get('global_variables', {}) or {}
+            if isinstance(vars, dict):
+                for v in vars.values():
+                    if ql in str(v).lower():
+                        return True
+            elif isinstance(vars, list):
+                for v in vars:
+                    if ql in str(v).lower():
+                        return True
+            return False
+        profiles = [p for p in profiles if matches(p)]
+    return {'query': q or '', 'count': len(profiles), 'results': profiles}
+
+
+@app.get("/api/project/scripts")
+async def get_scripts_query(project_path: str = Query(...), q: Optional[str] = Query(None)):
+    """Get scripts (query param version) with optional search filter."""
+    analyzer = get_analyzer(project_path)
+    scripts = list(analyzer.get_scripts().values())
+    if q:
+        ql = q.lower()
+        def matches(s):
+            name = s.get('name', '') or ''
+            if ql in name.lower():
+                return True
+            fp = s.get('file_path', '') or ''
+            if ql in fp.lower():
+                return True
+            content = s.get('content', '') or ''
+            if ql in str(content).lower():
+                return True
+            return False
+        scripts = [s for s in scripts if matches(s)]
+    return {'query': q or '', 'count': len(scripts), 'results': scripts}
+
+
 @app.get("/api/project/search/test-cases")
 async def search_test_cases_query(project_path: str = Query(...), q: str = Query(..., min_length=1)):
     """Search test cases (query param version)."""

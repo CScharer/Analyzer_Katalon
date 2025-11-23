@@ -83,7 +83,7 @@ export default function TestSuitesSection({ projectPath }: TestSuitesSectionProp
       <Card className="mb-3">
         <Card.Body>
           {error && (
-            <div className="alert alert-danger mb-3" role="alert">
+            <div className="alert alert-danger mb-3" role="alert" data-qa="testsuites-error">
               {error}
             </div>
           )}
@@ -94,15 +94,16 @@ export default function TestSuitesSection({ projectPath }: TestSuitesSectionProp
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              data-qa="testsuites-search-input"
             />
-            <Button variant="primary" onClick={handleSearch}>
+            <Button variant="primary" onClick={handleSearch} data-qa="testsuites-search-button">
               Search
             </Button>
             {searchQuery && (
               <Button variant="outline-secondary" onClick={() => {
                 setSearchQuery('')
                 loadTestSuites()
-              }}>
+              }} data-qa="testsuites-clear-button">
                 Clear
               </Button>
             )}
@@ -112,47 +113,47 @@ export default function TestSuitesSection({ projectPath }: TestSuitesSectionProp
 
       <Card>
       <Card.Header>
-        <Card.Title className="h6 mb-0">Test Suites ({total})</Card.Title>
+        <Card.Title className="h6 mb-0" data-qa="testsuites-title">Test Suites ({total})</Card.Title>
       </Card.Header>
       <Card.Body>
         {testSuites.length === 0 ? (
-          <p className="text-muted text-center py-4">No test suites found</p>
+          <p className="text-muted text-center py-4" data-qa="testsuites-empty">No test suites found</p>
         ) : (
           <>
-            <Table striped hover responsive>
+            <Table striped hover responsive data-qa="testsuites-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Description</th>
-                  <th>Test Cases</th>
-                  <th>Rerun</th>
-                  <th>Data Binding</th>
+                  <th data-qa="testsuites-col-name">Name</th>
+                  <th data-qa="testsuites-col-desc">Description</th>
+                  <th data-qa="testsuites-col-cases">Test Cases</th>
+                  <th data-qa="testsuites-col-rerun">Rerun</th>
+                  <th data-qa="testsuites-col-binding">Data Binding</th>
                 </tr>
               </thead>
               <tbody>
                 {testSuites.map((suite, index) => (
-                  <tr key={index}>
-                    <td>
+                  <tr key={index} data-qa={`testsuite-row-${index}`}>
+                    <td data-qa={`testsuite-name-${index}`}>
                       <strong>{suite.name || 'N/A'}</strong>
                     </td>
-                    <td>{suite.description || '-'}</td>
-                    <td>
-                      <Badge bg="info">
+                    <td data-qa={`testsuite-desc-${index}`}>{suite.description || '-'}</td>
+                    <td data-qa={`testsuite-cases-${index}`}>
+                      <Badge bg="info" data-qa={`testsuite-badge-cases-${index}`}>
                         {suite.test_cases?.length || 0}
                       </Badge>
                     </td>
-                    <td>
+                    <td data-qa={`testsuite-rerun-${index}`}>
                       {suite.is_rerun ? (
-                        <Badge bg="success">Yes</Badge>
+                        <Badge bg="success" data-qa={`testsuite-badge-rerun-${index}`}>Yes</Badge>
                       ) : (
-                        <Badge bg="secondary">No</Badge>
+                        <Badge bg="secondary" data-qa={`testsuite-badge-rerun-${index}`}>No</Badge>
                       )}
                     </td>
-                    <td>
+                    <td data-qa={`testsuite-binding-${index}`}>
                       {suite.test_cases?.some((tc: any) => tc.using_data_binding) ? (
-                        <Badge bg="warning">Yes</Badge>
+                        <Badge bg="warning" data-qa={`testsuite-badge-binding-${index}`}>Yes</Badge>
                       ) : (
-                        <Badge bg="secondary">No</Badge>
+                        <Badge bg="secondary" data-qa={`testsuite-badge-binding-${index}`}>No</Badge>
                       )}
                     </td>
                   </tr>
@@ -161,15 +162,17 @@ export default function TestSuitesSection({ projectPath }: TestSuitesSectionProp
             </Table>
 
             {totalPages > 1 && (
-              <div className="d-flex justify-content-center mt-3">
+              <div className="d-flex justify-content-center mt-3" data-qa="testsuites-pagination">
                 <Pagination>
                   <Pagination.First 
                     onClick={() => setCurrentPage(1)} 
                     disabled={currentPage === 1}
+                    data-qa="testsuites-pg-first"
                   />
                   <Pagination.Prev 
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
                     disabled={currentPage === 1}
+                    data-qa="testsuites-pg-prev"
                   />
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(page => 
@@ -180,11 +183,12 @@ export default function TestSuitesSection({ projectPath }: TestSuitesSectionProp
                     .map((page, idx, arr) => (
                       <div key={page}>
                         {idx > 0 && arr[idx - 1] !== page - 1 && (
-                          <Pagination.Ellipsis />
+                          <Pagination.Ellipsis data-qa={`testsuites-pg-ellipsis-${idx}`} />
                         )}
                         <Pagination.Item
                           active={page === currentPage}
                           onClick={() => setCurrentPage(page)}
+                          data-qa={`testsuites-pg-item-${page}`}
                         >
                           {page}
                         </Pagination.Item>
@@ -193,10 +197,12 @@ export default function TestSuitesSection({ projectPath }: TestSuitesSectionProp
                   <Pagination.Next 
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
                     disabled={currentPage === totalPages}
+                    data-qa="testsuites-pg-next"
                   />
                   <Pagination.Last 
                     onClick={() => setCurrentPage(totalPages)} 
                     disabled={currentPage === totalPages}
+                    data-qa="testsuites-pg-last"
                   />
                 </Pagination>
               </div>
