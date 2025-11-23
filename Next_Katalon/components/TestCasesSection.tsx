@@ -94,15 +94,16 @@ export default function TestCasesSection({ projectPath }: TestCasesSectionProps)
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              data-qa="testcases-search-input"
             />
-            <Button variant="primary" onClick={handleSearch}>
+            <Button variant="primary" onClick={handleSearch} data-qa="testcases-search-button">
               Search
             </Button>
             {searchQuery && (
               <Button variant="outline-secondary" onClick={() => {
                 setSearchQuery('')
                 loadTestCases()
-              }}>
+              }} data-qa="testcases-clear-button">
                 Clear
               </Button>
             )}
@@ -112,52 +113,54 @@ export default function TestCasesSection({ projectPath }: TestCasesSectionProps)
 
       <Card>
         <Card.Header className="d-flex justify-content-between align-items-center">
-          <Card.Title className="h6 mb-0">Test Cases ({total})</Card.Title>
+          <Card.Title className="h6 mb-0" data-qa="testcases-title">Test Cases ({total})</Card.Title>
         </Card.Header>
         <Card.Body>
           {testCases.length === 0 ? (
-            <p className="text-muted text-center py-4">No test cases found</p>
+            <p className="text-muted text-center py-4" data-qa="testcases-empty">No test cases found</p>
           ) : (
             <>
-              <Table striped hover responsive>
+              <Table striped hover responsive data-qa="testcases-table">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Tag</th>
-                    <th>Record Option</th>
+                    <th data-qa="testcases-col-name">Name</th>
+                    <th data-qa="testcases-col-desc">Description</th>
+                    <th data-qa="testcases-col-tag">Tag</th>
+                    <th data-qa="testcases-col-record">Record Option</th>
                   </tr>
                 </thead>
                 <tbody>
                   {testCases.map((testCase, index) => (
-                    <tr key={index}>
-                      <td>
+                    <tr key={index} data-qa={`testcase-row-${index}`}>
+                      <td data-qa={`testcase-name-${index}`}>
                         <strong>{testCase.name || 'N/A'}</strong>
                       </td>
-                      <td>{testCase.description || '-'}</td>
-                      <td>
+                      <td data-qa={`testcase-desc-${index}`}>{testCase.description || '-'}</td>
+                      <td data-qa={`testcase-tag-${index}`}>
                         {testCase.tag ? (
-                          <Badge bg="secondary">{testCase.tag}</Badge>
+                          <Badge bg="secondary" data-qa={`testcase-badge-${index}`}>{testCase.tag}</Badge>
                         ) : (
                           '-'
                         )}
                       </td>
-                      <td>{testCase.record_option || '-'}</td>
+                      <td data-qa={`testcase-record-${index}`}>{testCase.record_option || '-'}</td>
                     </tr>
                   ))}
                 </tbody>
               </Table>
 
               {totalPages > 1 && (
-                <div className="d-flex justify-content-center mt-3">
+                <div className="d-flex justify-content-center mt-3" data-qa="testcases-pagination">
                   <Pagination>
                     <Pagination.First 
                       onClick={() => setCurrentPage(1)} 
                       disabled={currentPage === 1}
+                      data-qa="testcases-pg-first"
                     />
                     <Pagination.Prev 
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
                       disabled={currentPage === 1}
+                      data-qa="testcases-pg-prev"
                     />
                     {Array.from({ length: totalPages }, (_, i) => i + 1)
                       .filter(page => 
@@ -168,11 +171,12 @@ export default function TestCasesSection({ projectPath }: TestCasesSectionProps)
                       .map((page, idx, arr) => (
                         <div key={page}>
                           {idx > 0 && arr[idx - 1] !== page - 1 && (
-                            <Pagination.Ellipsis />
+                            <Pagination.Ellipsis data-qa={`testcases-pg-ellipsis-${idx}`} />
                           )}
                           <Pagination.Item
                             active={page === currentPage}
                             onClick={() => setCurrentPage(page)}
+                            data-qa={`testcases-pg-item-${page}`}
                           >
                             {page}
                           </Pagination.Item>
@@ -181,10 +185,12 @@ export default function TestCasesSection({ projectPath }: TestCasesSectionProps)
                     <Pagination.Next 
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
                       disabled={currentPage === totalPages}
+                      data-qa="testcases-pg-next"
                     />
                     <Pagination.Last 
                       onClick={() => setCurrentPage(totalPages)} 
                       disabled={currentPage === totalPages}
+                      data-qa="testcases-pg-last"
                     />
                   </Pagination>
                 </div>

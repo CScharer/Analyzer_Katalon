@@ -10,6 +10,8 @@ import TestCasesSection from './TestCasesSection'
 import KeywordsSection from './KeywordsSection'
 import TestSuitesSection from './TestSuitesSection'
 import ObjectRepositorySection from './ObjectRepositorySection'
+import ProfilesSection from './ProfilesSection'
+import ScriptsSection from './ScriptsSection'
 
 interface DashboardProps {
   projectPath: string
@@ -50,9 +52,9 @@ export default function Dashboard({ projectPath, onError }: DashboardProps): JSX
       {/* Project Info */}
       <Card className="mb-4">
         <Card.Body>
-          <Card.Title className="h3">{dashboardData.project_info?.project_name || 'Project'}</Card.Title>
+          <Card.Title className="h3" data-qa="dashboard-project-name">{dashboardData.project_info?.project_name || 'Project'}</Card.Title>
           <Card.Text className="text-muted mb-0">
-            <small>{dashboardData.project_info?.project_path}</small>
+            <small data-qa="dashboard-project-path">{dashboardData.project_info?.project_path}</small>
           </Card.Text>
         </Card.Body>
       </Card>
@@ -60,29 +62,35 @@ export default function Dashboard({ projectPath, onError }: DashboardProps): JSX
       {/* Tabs */}
       <Card>
         <Card.Body>
-          <Tab.Container defaultActiveKey="overview" onSelect={(k) => setActiveTab(k || 'overview')}>
+          <Tab.Container activeKey={activeTab} onSelect={(k) => setActiveTab(k || 'overview')}>
             <Nav variant="tabs" className="mb-4">
               <Nav.Item>
-                <Nav.Link eventKey="overview">Overview</Nav.Link>
+                <Nav.Link eventKey="overview" data-qa="nav-overview">Overview</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="test-cases">Test Cases</Nav.Link>
+                <Nav.Link eventKey="test-cases" data-qa="nav-test-cases">Test Cases</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="test-suites">Test Suites</Nav.Link>
+                <Nav.Link eventKey="test-suites" data-qa="nav-test-suites">Test Suites</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="keywords">Keywords</Nav.Link>
+                <Nav.Link eventKey="keywords" data-qa="nav-keywords">Keywords</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="objects">Object Repository</Nav.Link>
+                <Nav.Link eventKey="objects" data-qa="nav-objects">Object Repository</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="profiles" data-qa="nav-profiles">Profiles</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="scripts" data-qa="nav-scripts">Scripts</Nav.Link>
               </Nav.Item>
             </Nav>
 
             <Tab.Content>
               <Tab.Pane eventKey="overview">
                 <div>
-                  <SummaryCards summary={dashboardData.summary} />
+                  <SummaryCards summary={dashboardData.summary} onCardClick={(k) => setActiveTab(k)} />
                   <CoverageSection coverage={dashboardData.coverage} />
                 </div>
               </Tab.Pane>
@@ -101,6 +109,12 @@ export default function Dashboard({ projectPath, onError }: DashboardProps): JSX
 
               <Tab.Pane eventKey="objects">
                 <ObjectRepositorySection projectPath={projectPath} />
+              </Tab.Pane>
+              <Tab.Pane eventKey="profiles">
+                <ProfilesSection projectPath={projectPath} />
+              </Tab.Pane>
+              <Tab.Pane eventKey="scripts">
+                <ScriptsSection projectPath={projectPath} />
               </Tab.Pane>
             </Tab.Content>
           </Tab.Container>

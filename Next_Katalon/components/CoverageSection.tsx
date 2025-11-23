@@ -38,14 +38,14 @@ export default function CoverageSection({ coverage }: CoverageSectionProps): JSX
 
   return (
     <div>
-      <h4 className="mb-4">Coverage Analysis</h4>
+      <h4 className="mb-4" data-qa="coverage-title">Coverage Analysis</h4>
       
       <Row className="g-4 mb-4">
         {/* Coverage Bar Chart */}
         <Col lg={6}>
           <Card>
             <Card.Header>
-              <Card.Title className="h6 mb-0">Usage Coverage</Card.Title>
+              <Card.Title className="h6 mb-0" data-qa="coverage-usage-title">Usage Coverage</Card.Title>
             </Card.Header>
             <Card.Body>
               <ResponsiveContainer width="100%" height={300}>
@@ -67,7 +67,7 @@ export default function CoverageSection({ coverage }: CoverageSectionProps): JSX
         <Col lg={6}>
           <Card>
             <Card.Header>
-              <Card.Title className="h6 mb-0">Keyword Usage</Card.Title>
+              <Card.Title className="h6 mb-0" data-qa="coverage-keyword-title">Keyword Usage</Card.Title>
             </Card.Header>
             <Card.Body>
               <ResponsiveContainer width="100%" height={300}>
@@ -97,41 +97,41 @@ export default function CoverageSection({ coverage }: CoverageSectionProps): JSX
       {/* Coverage Stats */}
       <Row className="g-4">
         <Col md={4}>
-          <Card className="border-primary">
+          <Card className="border-primary" data-qa="coverage-card-testcases">
             <Card.Body>
-              <Card.Title className="h6 text-primary">Test Case Coverage</Card.Title>
-              <h2 className="text-primary mb-2">
+              <Card.Title className="h6 text-primary" data-qa="coverage-card-testcases-title">Test Case Coverage</Card.Title>
+              <h2 className="text-primary mb-2" data-qa="coverage-card-testcases-value">
                 {testCaseCoverage.coverage_percentage?.toFixed(1) || 0}%
               </h2>
-              <Card.Text className="text-muted small mb-0">
-                {testCaseCoverage.used_in_suites || 0} of {testCaseCoverage.total_test_cases || 0} used
-              </Card.Text>
+              <Card.Text className="text-muted small mb-0" data-qa="coverage-card-testcases-sub">{
+                `${testCaseCoverage.used_in_suites || 0} of ${testCaseCoverage.total_test_cases || 0} used`
+              }</Card.Text>
             </Card.Body>
           </Card>
         </Col>
 
         <Col md={4}>
-          <Card className="border-success">
+          <Card className="border-success" data-qa="coverage-card-objects">
             <Card.Body>
-              <Card.Title className="h6 text-success">Object Repository Coverage</Card.Title>
-              <h2 className="text-success mb-2">
+              <Card.Title className="h6 text-success" data-qa="coverage-card-objects-title">Object Repository Coverage</Card.Title>
+              <h2 className="text-success mb-2" data-qa="coverage-card-objects-value">
                 {objectUsage.coverage_percentage?.toFixed(1) || 0}%
               </h2>
-              <Card.Text className="text-muted small mb-0">
-                {objectUsage.used_objects || 0} of {objectUsage.total_objects || 0} used
-              </Card.Text>
+              <Card.Text className="text-muted small mb-0" data-qa="coverage-card-objects-sub">{
+                `${objectUsage.used_objects || 0} of ${objectUsage.total_objects || 0} used`
+              }</Card.Text>
             </Card.Body>
           </Card>
         </Col>
 
         <Col md={4}>
-          <Card className="border-info">
+          <Card className="border-info" data-qa="coverage-card-keywords">
             <Card.Body>
-              <Card.Title className="h6 text-info">Keywords</Card.Title>
-              <h2 className="text-info mb-2">
+              <Card.Title className="h6 text-info" data-qa="coverage-card-keywords-title">Keywords</Card.Title>
+              <h2 className="text-info mb-2" data-qa="coverage-card-keywords-value">
                 {keywordUsage.used_keywords || 0} / {keywordUsage.total_keywords || 0}
               </h2>
-              <Card.Text className="text-muted small mb-0">
+              <Card.Text className="text-muted small mb-0" data-qa="coverage-card-keywords-sub">
                 {keywordUsage.unused_keywords?.length || 0} unused
               </Card.Text>
             </Card.Body>

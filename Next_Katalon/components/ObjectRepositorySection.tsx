@@ -96,7 +96,7 @@ export default function ObjectRepositorySection({ projectPath }: ObjectRepositor
       <Card className="mb-3">
         <Card.Body>
           {error && (
-            <div className="alert alert-danger mb-3" role="alert">
+            <div className="alert alert-danger mb-3" role="alert" data-qa="objects-error">
               {error}
             </div>
           )}
@@ -107,15 +107,16 @@ export default function ObjectRepositorySection({ projectPath }: ObjectRepositor
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              data-qa="objects-search-input"
             />
-            <Button variant="primary" onClick={handleSearch}>
+            <Button variant="primary" onClick={handleSearch} data-qa="objects-search-button">
               Search
             </Button>
             {searchQuery && (
               <Button variant="outline-secondary" onClick={() => {
                 setSearchQuery('')
                 loadObjects()
-              }}>
+              }} data-qa="objects-clear-button">
                 Clear
               </Button>
             )}
@@ -125,55 +126,55 @@ export default function ObjectRepositorySection({ projectPath }: ObjectRepositor
 
       <Card>
         <Card.Header>
-          <Card.Title className="h6 mb-0">Object Repository ({total})</Card.Title>
+          <Card.Title className="h6 mb-0" data-qa="objects-title">Object Repository ({total})</Card.Title>
         </Card.Header>
         <Card.Body>
         {objects.length === 0 ? (
-          <p className="text-muted text-center py-4">No objects found</p>
+          <p className="text-muted text-center py-4" data-qa="objects-empty">No objects found</p>
         ) : (
           <>
-            <Table striped hover responsive>
+            <Table striped hover responsive data-qa="objects-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Type</th>
-                  <th>Selector Method</th>
-                  <th>Selectors</th>
-                  <th>Properties</th>
+                  <th data-qa="objects-col-name">Name</th>
+                  <th data-qa="objects-col-type">Type</th>
+                  <th data-qa="objects-col-selector-method">Selector Method</th>
+                  <th data-qa="objects-col-selectors">Selectors</th>
+                  <th data-qa="objects-col-properties">Properties</th>
                 </tr>
               </thead>
               <tbody>
                 {objects.map((obj, index) => (
-                  <tr key={index}>
-                    <td>
+                  <tr key={index} data-qa={`object-row-${index}`}>
+                    <td data-qa={`object-name-${index}`}>
                       <strong>{obj.name || 'N/A'}</strong>
                       {obj.description && (
-                        <div>
+                        <div data-qa={`object-desc-${index}`}>
                           <small className="text-muted">{obj.description}</small>
                         </div>
                       )}
                     </td>
-                    <td>
+                    <td data-qa={`object-type-${index}`}>
                       {obj.element_type ? (
-                        <Badge bg={getVariantForType(obj.element_type)}>
+                        <Badge bg={getVariantForType(obj.element_type)} data-qa={`object-badge-type-${index}`}>
                           {obj.element_type}
                         </Badge>
                       ) : (
                         '-'
                       )}
                     </td>
-                    <td>
+                    <td data-qa={`object-selector-method-${index}`}>
                       {obj.selector_method ? (
-                        <Badge bg="info">{obj.selector_method}</Badge>
+                        <Badge bg="info" data-qa={`object-badge-selector-${index}`}>{obj.selector_method}</Badge>
                       ) : (
                         '-'
                       )}
                     </td>
-                    <td>
+                    <td data-qa={`object-selectors-${index}`}>
                       {obj.selectors && Object.keys(obj.selectors).length > 0 ? (
                         <div>
                           {Object.entries(obj.selectors).map(([key, value]: [string, any]) => (
-                            <div key={key}>
+                            <div key={key} data-qa={`object-selector-${index}-${key}`}>
                               <small>
                                 <strong>{key}:</strong> {String(value).substring(0, 50)}
                                 {String(value).length > 50 ? '...' : ''}
@@ -185,9 +186,9 @@ export default function ObjectRepositorySection({ projectPath }: ObjectRepositor
                         '-'
                       )}
                     </td>
-                    <td>
+                    <td data-qa={`object-properties-${index}`}>
                       {obj.properties?.length > 0 ? (
-                        <Badge bg="secondary">{obj.properties.length} properties</Badge>
+                        <Badge bg="secondary" data-qa={`object-badge-properties-${index}`}>{obj.properties.length} properties</Badge>
                       ) : (
                         '-'
                       )}
@@ -198,15 +199,17 @@ export default function ObjectRepositorySection({ projectPath }: ObjectRepositor
             </Table>
 
             {totalPages > 1 && (
-              <div className="d-flex justify-content-center mt-3">
+              <div className="d-flex justify-content-center mt-3" data-qa="objects-pagination">
                 <Pagination>
                   <Pagination.First 
                     onClick={() => setCurrentPage(1)} 
                     disabled={currentPage === 1}
+                    data-qa="objects-pg-first"
                   />
                   <Pagination.Prev 
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
                     disabled={currentPage === 1}
+                    data-qa="objects-pg-prev"
                   />
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(page => 
@@ -217,11 +220,12 @@ export default function ObjectRepositorySection({ projectPath }: ObjectRepositor
                     .map((page, idx, arr) => (
                       <div key={page}>
                         {idx > 0 && arr[idx - 1] !== page - 1 && (
-                          <Pagination.Ellipsis />
+                          <Pagination.Ellipsis data-qa={`objects-pg-ellipsis-${idx}`} />
                         )}
                         <Pagination.Item
                           active={page === currentPage}
                           onClick={() => setCurrentPage(page)}
+                          data-qa={`objects-pg-item-${page}`}
                         >
                           {page}
                         </Pagination.Item>
@@ -230,10 +234,12 @@ export default function ObjectRepositorySection({ projectPath }: ObjectRepositor
                   <Pagination.Next 
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
                     disabled={currentPage === totalPages}
+                    data-qa="objects-pg-next"
                   />
                   <Pagination.Last 
                     onClick={() => setCurrentPage(totalPages)} 
                     disabled={currentPage === totalPages}
+                    data-qa="objects-pg-last"
                   />
                 </Pagination>
               </div>
