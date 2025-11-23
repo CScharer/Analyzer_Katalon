@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, Form, Button, InputGroup, ListGroup } from 'react-bootstrap'
 
 interface ProjectSelectorProps {
@@ -10,13 +10,12 @@ interface ProjectSelectorProps {
 
 export default function ProjectSelector({ onProjectSelect, currentPath }: ProjectSelectorProps): JSX.Element {
   const [inputPath, setInputPath] = useState<string>(currentPath)
-  const [recentProjects, setRecentProjects] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('recentProjects')
-      return stored ? JSON.parse(stored) : []
-    }
-    return []
-  })
+  const [recentProjects, setRecentProjects] = useState<string[]>([])
+
+  useEffect(() => {
+    const stored = localStorage.getItem('recentProjects')
+    setRecentProjects(stored ? JSON.parse(stored) : [])
+  }, [])
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
