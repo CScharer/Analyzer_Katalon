@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, Form, Button, InputGroup, ListGroup } from 'react-bootstrap'
+import { Card, Form, Button, InputGroup, ListGroup, Spinner, CloseButton } from 'react-bootstrap'
+import { getProjectSummary } from '@/lib/api'
 
 interface ProjectSelectorProps {
   onProjectSelect: (path: string) => void
@@ -11,28 +12,62 @@ interface ProjectSelectorProps {
 export default function ProjectSelector({ onProjectSelect, currentPath }: ProjectSelectorProps): JSX.Element {
   const [inputPath, setInputPath] = useState<string>(currentPath)
   const [recentProjects, setRecentProjects] = useState<string[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
 
   useEffect(() => {
     const stored = localStorage.getItem('recentProjects')
     setRecentProjects(stored ? JSON.parse(stored) : [])
   }, [])
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault()
-    if (inputPath.trim()) {
-      onProjectSelect(inputPath.trim())
+  const validateAndSelect = async (path: string): Promise<void> => {
+    if (!path || !path.trim()) return
+    setError('')
+    setLoading(true)
+    try {
+      await getProjectSummary(path.trim())
+      onProjectSelect(path.trim())
       // Save to recent projects
       if (typeof window !== 'undefined') {
-        const updated = [inputPath.trim(), ...recentProjects.filter(p => p !== inputPath.trim())].slice(0, 5)
+        const updated = [path.trim(), ...recentProjects.filter(p => p !== path.trim())].slice(0, 5)
         setRecentProjects(updated)
         localStorage.setItem('recentProjects', JSON.stringify(updated))
       }
+    } catch (err: any) {
+      const msg = err?.message || 'Failed to load project. Please check the path and try again.'
+      setError(msg)
+      console.error('Project validation failed:', err)
+    } finally {
+      setLoading(false)
     }
+  }
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault()
+    validateAndSelect(inputPath)
   }
 
   const handleRecentClick = (path: string): void => {
     setInputPath(path)
-    onProjectSelect(path)
+    validateAndSelect(path)
+  }
+
+  const removeRecent = (pathToRemove: string): void => {
+    const updated = recentProjects.filter(p => p !== pathToRemove)
+    setRecentProjects(updated)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('recentProjects', JSON.stringify(updated))
+    }
+    // if current input equals removed path, clear it
+    if (inputPath === pathToRemove) setInputPath('')
+  }
+
+  const clearAllRecent = (): void => {
+    if (!confirm('Clear all recent project paths? This cannot be undone.')) return
+    setRecentProjects([])
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('recentProjects')
+    }
   }
 
   return (
@@ -52,8 +87,12 @@ export default function ProjectSelector({ onProjectSelect, currentPath }: Projec
                 placeholder="/path/to/katalon/project"
                 size="lg"
               />
-              <Button variant="primary" type="submit" size="lg">
-                Analyze
+              <Button variant="primary" type="submit" size="lg" disabled={loading}>
+                {loading ? (
+                  <><Spinner animation="border" size="sm" className="me-2" />Analyzing</>
+                ) : (
+                  'Analyze'
+                )}
               </Button>
             </InputGroup>
             <Form.Text className="text-muted">
@@ -62,19 +101,33 @@ export default function ProjectSelector({ onProjectSelect, currentPath }: Projec
           </Form.Group>
         </Form>
 
+        {error && (
+          <div className="alert alert-danger" role="alert">{error}</div>
+        )}
+
         {recentProjects.length > 0 && (
           <div className="mt-4">
-            <h6 className="text-muted mb-2">Recent Projects</h6>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <h6 className="text-muted mb-0">Recent Projects</h6>
+              <div>
+                <Button variant="outline-secondary" size="sm" onClick={clearAllRecent} className="me-2">
+                  Clear All
+                </Button>
+              </div>
+            </div>
             <div className="d-flex flex-wrap gap-2">
               {recentProjects.map((path, index) => (
-                <Button
-                  key={index}
-                  variant="outline-secondary"
-                  size="sm"
-                  onClick={() => handleRecentClick(path)}
-                >
-                  {path.split('/').pop() || path}
-                </Button>
+                <div key={index} className="d-inline-flex align-items-center border rounded px-2 py-1">
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={() => handleRecentClick(path)}
+                    className="p-0 me-2"
+                  >
+                    {path.split('/').pop() || path}
+                  </Button>
+                  <CloseButton onClick={() => removeRecent(path)} />
+                </div>
               ))}
             </div>
           </div>

@@ -65,6 +65,27 @@ async def root():
     }
 
 
+@app.get("/api/project/summary")
+async def get_summary_query(project_path: str = Query(...)):
+    """Get project summary (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.get_summary()
+
+
+@app.get("/api/project/info")
+async def get_project_info_query(project_path: str = Query(...)):
+    """Get project information (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.get_project_info()
+
+
+@app.get("/api/project/dashboard")
+async def get_dashboard_query(project_path: str = Query(...)):
+    """Get dashboard data (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.get_dashboard_data()
+
+
 @app.get("/api/projects/{project_path:path}/summary")
 async def get_summary(project_path: str):
     """Get project summary."""
@@ -149,6 +170,69 @@ async def get_dashboard(project_path: str):
     """Get dashboard data."""
     analyzer = get_analyzer(project_path)
     return analyzer.get_dashboard_data()
+
+
+@app.get("/api/project/test-cases")
+async def get_test_cases_query(project_path: str = Query(...), limit: Optional[int] = Query(None), offset: int = Query(0, ge=0)):
+    """Get test cases with pagination (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.get_test_cases(limit=limit, offset=offset)
+
+
+@app.get("/api/project/test-suites")
+async def get_test_suites_query(project_path: str = Query(...), limit: Optional[int] = Query(None), offset: int = Query(0, ge=0)):
+    """Get test suites with pagination (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.get_test_suites(limit=limit, offset=offset)
+
+
+@app.get("/api/project/keywords")
+async def get_keywords_query(project_path: str = Query(...), limit: Optional[int] = Query(None), offset: int = Query(0, ge=0)):
+    """Get keywords with pagination (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.get_keywords(limit=limit, offset=offset)
+
+
+@app.get("/api/project/object-repository")
+async def get_object_repository_query(project_path: str = Query(...), limit: Optional[int] = Query(None), offset: int = Query(0, ge=0)):
+    """Get object repository (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.get_object_repository(limit=limit, offset=offset)
+
+
+@app.get("/api/project/coverage")
+async def get_coverage_query(project_path: str = Query(...)):
+    """Get coverage analysis (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.get_coverage_analysis()
+
+
+@app.get("/api/project/search/test-cases")
+async def search_test_cases_query(project_path: str = Query(...), q: str = Query(..., min_length=1)):
+    """Search test cases (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.search_test_cases(q)
+
+
+@app.get("/api/project/search/keywords")
+async def search_keywords_query(project_path: str = Query(...), q: str = Query(..., min_length=1)):
+    """Search keywords (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.search_keywords(q)
+
+
+@app.get("/api/project/search/test-suites")
+async def search_test_suites_query(project_path: str = Query(...), q: str = Query(..., min_length=1)):
+    """Search test suites (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.search_test_suites(q)
+
+
+@app.get("/api/project/search/object-repository")
+async def search_object_repository_query(project_path: str = Query(...), q: str = Query(..., min_length=1)):
+    """Search object repository (query param version)."""
+    analyzer = get_analyzer(project_path)
+    return analyzer.search_object_repository(q)
 
 
 @app.get("/api/projects/{project_path:path}/search/test-cases")
