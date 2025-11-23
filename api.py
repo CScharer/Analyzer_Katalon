@@ -162,9 +162,18 @@ class KatalonAnalyzerAPI:
         Returns:
             Dictionary with profiles
         """
-        return {
-            'profiles': list(self.analyzer.get_profiles().values())
-        }
+        # Return the raw mapping of profiles from the analyzer
+        return self.analyzer.get_profiles()
+
+    def get_scripts(self) -> Dict[str, Any]:
+        """
+        Get all scripts.
+
+        Returns:
+            Dictionary with scripts
+        """
+        # Return the raw mapping of scripts from the analyzer
+        return self.analyzer.get_scripts()
     
     def get_coverage_analysis(self) -> Dict[str, Any]:
         """
