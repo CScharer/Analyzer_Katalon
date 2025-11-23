@@ -41,6 +41,7 @@ export default function ProfilesSection({ projectPath }: ProfilesSectionProps): 
               placeholder="Search profiles"
               value={q}
               onChange={(e) => setQ(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && load(q)}
               data-qa="profiles-search-input"
             />
             <Button variant="primary" onClick={() => load(q)} data-qa="profiles-search-button">

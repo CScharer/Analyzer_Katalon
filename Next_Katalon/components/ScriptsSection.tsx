@@ -41,6 +41,7 @@ export default function ScriptsSection({ projectPath }: ScriptsSectionProps): JS
               placeholder="Search scripts"
               value={q}
               onChange={(e) => setQ(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && load(q)}
               data-qa="scripts-search-input"
             />
             <Button variant="primary" onClick={() => load(q)} data-qa="scripts-search-button">
