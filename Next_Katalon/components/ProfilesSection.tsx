@@ -35,7 +35,7 @@ export default function ProfilesSection({ projectPath }: ProfilesSectionProps): 
     <Card>
       <Card.Header>
         <div className="d-flex justify-content-between align-items-center">
-          <Card.Title className="h6 mb-0">Profiles</Card.Title>
+          <Card.Title className="h6 mb-0" data-qa="profiles-title">Profiles</Card.Title>
           <InputGroup style={{ width: 360 }}>
             <FormControl
               placeholder="Search profiles"

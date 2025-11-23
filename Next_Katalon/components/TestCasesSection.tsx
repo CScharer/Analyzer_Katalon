@@ -83,7 +83,7 @@ export default function TestCasesSection({ projectPath }: TestCasesSectionProps)
       <Card className="mb-3">
         <Card.Body>
           {error && (
-            <div className="alert alert-danger mb-3" role="alert">
+            <div className="alert alert-danger mb-3" role="alert" data-qa="testcases-error">
               {error}
             </div>
           )}

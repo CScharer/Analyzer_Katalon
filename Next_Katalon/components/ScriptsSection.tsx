@@ -35,7 +35,7 @@ export default function ScriptsSection({ projectPath }: ScriptsSectionProps): JS
     <Card>
       <Card.Header>
         <div className="d-flex justify-content-between align-items-center">
-          <Card.Title className="h6 mb-0">Scripts</Card.Title>
+          <Card.Title className="h6 mb-0" data-qa="scripts-title">Scripts</Card.Title>
           <InputGroup style={{ width: 360 }}>
             <FormControl
               placeholder="Search scripts"
