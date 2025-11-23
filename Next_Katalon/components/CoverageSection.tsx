@@ -5,11 +5,12 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 
 interface CoverageSectionProps {
   coverage: any
+  onCardClick?: (key: string) => void
 }
 
 const COLORS = ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1']
 
-export default function CoverageSection({ coverage }: CoverageSectionProps): JSX.Element {
+export default function CoverageSection({ coverage, onCardClick }: CoverageSectionProps): JSX.Element {
   const testCaseCoverage = coverage?.test_case_coverage || {}
   const objectUsage = coverage?.object_repository_usage || {}
   const keywordUsage = coverage?.keyword_usage || {}
@@ -97,7 +98,15 @@ export default function CoverageSection({ coverage }: CoverageSectionProps): JSX
       {/* Coverage Stats */}
       <Row className="g-4">
         <Col md={4}>
-          <Card className="border-primary" data-qa="coverage-card-testcases">
+          <Card 
+            className="border-primary" 
+            data-qa="coverage-card-testcases"
+            role="button"
+            tabIndex={0}
+            style={{ cursor: 'pointer' }}
+            onClick={() => onCardClick && onCardClick('test-cases')}
+            onKeyDown={(e) => { if (e.key === 'Enter') onCardClick && onCardClick('test-cases') }}
+          >
             <Card.Body>
               <Card.Title className="h6 text-primary" data-qa="coverage-card-testcases-title">Test Case Coverage</Card.Title>
               <h2 className="text-primary mb-2" data-qa="coverage-card-testcases-value">
@@ -111,7 +120,15 @@ export default function CoverageSection({ coverage }: CoverageSectionProps): JSX
         </Col>
 
         <Col md={4}>
-          <Card className="border-success" data-qa="coverage-card-objects">
+          <Card 
+            className="border-success" 
+            data-qa="coverage-card-objects"
+            role="button"
+            tabIndex={0}
+            style={{ cursor: 'pointer' }}
+            onClick={() => onCardClick && onCardClick('objects')}
+            onKeyDown={(e) => { if (e.key === 'Enter') onCardClick && onCardClick('objects') }}
+          >
             <Card.Body>
               <Card.Title className="h6 text-success" data-qa="coverage-card-objects-title">Object Repository Coverage</Card.Title>
               <h2 className="text-success mb-2" data-qa="coverage-card-objects-value">
@@ -125,7 +142,15 @@ export default function CoverageSection({ coverage }: CoverageSectionProps): JSX
         </Col>
 
         <Col md={4}>
-          <Card className="border-info" data-qa="coverage-card-keywords">
+          <Card 
+            className="border-info" 
+            data-qa="coverage-card-keywords"
+            role="button"
+            tabIndex={0}
+            style={{ cursor: 'pointer' }}
+            onClick={() => onCardClick && onCardClick('keywords')}
+            onKeyDown={(e) => { if (e.key === 'Enter') onCardClick && onCardClick('keywords') }}
+          >
             <Card.Body>
               <Card.Title className="h6 text-info" data-qa="coverage-card-keywords-title">Keywords</Card.Title>
               <h2 className="text-info mb-2" data-qa="coverage-card-keywords-value">
