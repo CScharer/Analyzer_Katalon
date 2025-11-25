@@ -52,15 +52,17 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 ### Issue 4: Port Already in Use
 
-**Error:** `Address already in use` or `Port 8000/3000 is already in use`
+**Error:** `Address already in use` or `Port API_PORT/NEXT_PORT is already in use`
 
 **Solution:**
 ```bash
-# Find and kill process on port 8000 (Python API)
-lsof -ti:8000 | xargs kill -9
+# Find and kill process on the API port (default 8000)
+API_PORT=${API_PORT:-8000}
+lsof -ti:$API_PORT | xargs kill -9
 
-# Find and kill process on port 3000 (Next.js)
-lsof -ti:3000 | xargs kill -9
+# Find and kill process on the Next.js port (default 3000)
+NEXT_PORT=${NEXT_PORT:-3000}
+lsof -ti:$NEXT_PORT | xargs kill -9
 ```
 
 ### Issue 5: Next.js Build Errors
@@ -81,9 +83,9 @@ npm run dev
 ### Issue 7: CORS Errors
 
 If you see CORS errors in the browser console, make sure:
-1. The Python API server is running on port 8000
+1. The Python API server is running on the `API_PORT` you configured (default 8000)
 2. The API server has CORS enabled (check `api_server.py`)
-3. The frontend is trying to connect to the correct URL
+3. The frontend is trying to connect to the correct URL (see `.env`)
 
 ### Issue 8: TypeScript Errors
 
@@ -123,13 +125,15 @@ npm run dev
 
 **Check Python API:**
 ```bash
-curl http://localhost:8000/
+API_PORT=${API_PORT:-8000}
+curl http://localhost:$API_PORT/
 # Should return: {"message":"Katalon Studio Project Analyzer API","version":"1.0.0"}
 ```
 
 **Check Next.js:**
 ```bash
-curl http://localhost:3000/
+NEXT_PORT=${NEXT_PORT:-3000}
+curl http://localhost:$NEXT_PORT/
 # Should return HTML
 ```
 

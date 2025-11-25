@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const apiPort = process.env.NEXT_PUBLIC_API_PORT || '8000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || `http://localhost:${apiPort}`
 
 export function encodeProjectPath(path: string): string {
   // Encode the path for URL (handle spaces and special characters)

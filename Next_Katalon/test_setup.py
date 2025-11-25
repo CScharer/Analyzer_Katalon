@@ -4,8 +4,33 @@ Diagnostic script to test the setup.
 Run this to check if everything is configured correctly.
 """
 
+import os
 import sys
 from pathlib import Path
+
+
+def load_env_file():
+    """Populate os.environ from the nearest .env file without overriding existing values."""
+    search_roots = [
+        Path(__file__).resolve().parent,
+        Path(__file__).resolve().parent.parent,
+        Path(__file__).resolve().parent.parent.parent,
+    ]
+    for root in search_roots:
+        env_path = root / ".env"
+        if not env_path.exists():
+            continue
+        with env_path.open("r", encoding="utf-8") as env_file:
+            for raw_line in env_file:
+                line = raw_line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, value = line.split("=", 1)
+                os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+        break
+
+
+load_env_file()
 
 print("=" * 60)
 print("Katalon Analyzer Setup Diagnostic")
@@ -113,8 +138,10 @@ def check_port(port, name):
     else:
         print(f"   ✓ Port {port} ({name}) is available")
 
-check_port(8000, "Python API")
-check_port(3000, "Next.js")
+api_port = int(os.getenv("API_PORT", "8000"))
+next_port = int(os.getenv("NEXT_PORT", "3000"))
+check_port(api_port, "Python API")
+check_port(next_port, "Next.js")
 
 print("\n" + "=" * 60)
 print("Diagnostic complete!")

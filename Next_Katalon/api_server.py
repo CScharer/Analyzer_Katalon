@@ -13,6 +13,30 @@ import os
 from pathlib import Path
 from typing import Optional
 
+
+def load_env_file():
+    """Populate os.environ from the nearest .env file without overriding existing values."""
+    search_roots = [
+        Path(__file__).resolve().parent,
+        Path(__file__).resolve().parent.parent,
+        Path(__file__).resolve().parent.parent.parent,
+    ]
+    for root in search_roots:
+        env_path = root / ".env"
+        if not env_path.exists():
+            continue
+        with env_path.open("r", encoding="utf-8") as env_file:
+            for raw_line in env_file:
+                line = raw_line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, value = line.split("=", 1)
+                os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+        break
+
+
+load_env_file()
+
 # Add the onboarding directory to path so we can import Analyzer_Katalon as a package
 # Next_Katalon -> Analyzer_Katalon -> onboarding
 onboarding_dir = Path(__file__).parent.parent.parent
@@ -20,6 +44,9 @@ sys.path.insert(0, str(onboarding_dir))
 
 # Now import Analyzer_Katalon as a package
 from Analyzer_Katalon.api import KatalonAnalyzerAPI
+
+NEXT_PORT = int(os.getenv("NEXT_PORT", "3000"))
+API_PORT = int(os.getenv("API_PORT", "8000"))
 
 app = FastAPI(
     title="Katalon Studio Project Analyzer API",
@@ -30,7 +57,10 @@ app = FastAPI(
 # Enable CORS for Next.js frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=[
+        f"http://localhost:{NEXT_PORT}",
+        f"http://127.0.0.1:{NEXT_PORT}",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -314,7 +344,8 @@ async def global_exception_handler(request, exc):
 
 if __name__ == "__main__":
     import uvicorn
-    print("Starting Katalon Analyzer API Server on http://localhost:8000")
+
+    print(f"Starting Katalon Analyzer API Server on http://localhost:{API_PORT}")
     print("Make sure to start this before running the Next.js frontend")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=API_PORT)
 
