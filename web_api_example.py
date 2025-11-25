@@ -77,6 +77,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from Analyzer_Katalon.api import KatalonAnalyzerAPI
 from typing import Optional
+import os
 
 app = FastAPI(title="Katalon Studio Project Analyzer API")
 
@@ -159,11 +160,6 @@ async def get_coverage(project_path: str):
     analyzer = get_analyzer(project_path)
     return analyzer.get_coverage_analysis()
 
-@app.get("/api/projects/{project_path:path}/dashboard")
-async def get_dashboard(project_path: str):
-    '''Get dashboard data.'''
-    analyzer = get_analyzer(project_path)
-    return analyzer.get_dashboard_data()
 
 @app.get("/api/projects/{project_path:path}/search/test-cases")
 async def search_test_cases(project_path: str, q: str = Query(..., min_length=1)):
@@ -185,7 +181,7 @@ async def export_all(project_path: str):
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("API_PORT", "8000")))
 """
 
 # ============================================================================
@@ -195,6 +191,7 @@ if __name__ == '__main__':
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import json
+import os
 from Analyzer_Katalon.api import KatalonAnalyzerAPI
 
 class AnalyzerHandler(BaseHTTPRequestHandler):
@@ -244,8 +241,9 @@ class AnalyzerHandler(BaseHTTPRequestHandler):
         pass
 
 if __name__ == '__main__':
-    server = HTTPServer(('localhost', 8000), AnalyzerHandler)
-    print("Server running on http://localhost:8000")
+    api_port = int(os.getenv("API_PORT", "8000"))
+    server = HTTPServer(('localhost', api_port), AnalyzerHandler)
+    print(f"Server running on http://localhost:{api_port}")
     server.serve_forever()
 """
 

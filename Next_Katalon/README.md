@@ -40,7 +40,7 @@ cd Analyzer_Katalon/Next_Katalon
 python api_server.py
 ```
 
-The API server will run on `http://localhost:8000`
+The API server uses the `API_PORT` value from `.env` (default `8000`), so you'll typically reach it at `http://localhost:8000`.
 
 ### 2. Start the Next.js Frontend
 
@@ -51,11 +51,11 @@ cd Analyzer_Katalon/Next_Katalon
 npm run dev
 ```
 
-The frontend will run on `http://localhost:3000`
+The Next.js dev server reads `NEXT_PORT` from `.env` (default `3000`), so it runs on `http://localhost:3000`.
 
 ## Usage
 
-1. Open your browser and navigate to `http://localhost:3000`
+1. Open your browser and navigate to `http://localhost:3000` (or the port set in `NEXT_PORT`)
 2. Enter the full path to your Katalon Studio project directory
 3. Click "Analyze" to load project data
 4. Explore the different tabs:
@@ -91,12 +91,10 @@ Next_Katalon/
 
 ## API Configuration
 
-The frontend communicates with the Python API server. By default, it connects to `http://localhost:8000`. 
-
-To change the API URL, set the `NEXT_PUBLIC_API_URL` environment variable:
+The frontend communicates with the Python API server. By default, it points to `http://localhost:${API_PORT}` where `API_PORT` comes from your `.env` file (default `8000`). Update `.env` to change either `API_PORT` or `NEXT_PORT`, or override the entire URL with `NEXT_PUBLIC_API_URL` if you need to point to a remote server:
 
 ```bash
-NEXT_PUBLIC_API_URL=http://your-api-url:8000 npm run dev
+NEXT_PUBLIC_API_URL=http://your-api-url npm run dev
 ```
 
 ## Building for Production

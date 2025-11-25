@@ -37,10 +37,11 @@ cd "/Users/christopherscharer/Katalon Studio/onboarding/Analyzer_Katalon/Next_Ka
 python3 api_server.py
 ```
 
-You should see:
+You should see something like:
 ```
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 ```
+(`8000` comes from the `API_PORT` value in `.env`.)
 
 **Note:** Make sure you're in the `Next_Katalon` directory when running the API server.
 
@@ -57,10 +58,11 @@ You should see:
 ```
 - ready started server on 0.0.0.0:3000
 ```
+(`3000` is the default `NEXT_PORT` from `.env`.)
 
 ### Step 3: Open in Browser
 
-Navigate to: **http://localhost:3000**
+Navigate to: **http://localhost:3000** (or the value of `NEXT_PORT`)
 
 ## Using the Application
 
@@ -79,12 +81,12 @@ Navigate to: **http://localhost:3000**
 ## Troubleshooting
 
 ### API Server Not Running
-- Make sure the Python API server is running on port 8000
+- Make sure the Python API server is running on the port defined in `API_PORT` (default `8000`)
 - Check for any error messages in the terminal
 
 ### Cannot Connect to API
 - Verify `NEXT_PUBLIC_API_URL` is set correctly (default: http://localhost:8000)
-- Check if port 8000 is available
+- Check if the `API_PORT` value is available
 
 ### Project Path Issues
 - Use absolute paths (full path from root)
@@ -98,5 +100,5 @@ npm run build
 npm start
 ```
 
-The production build will be available on port 3000 (or the port specified in your environment).
+The production build will be available on the port configured via `NEXT_PORT` (default `3000`).
 
