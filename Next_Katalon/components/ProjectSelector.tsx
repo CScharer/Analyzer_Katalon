@@ -97,7 +97,9 @@ export default function ProjectSelector({ onProjectSelect, currentPath }: Projec
               </Button>
             </InputGroup>
             <Form.Text className="text-muted" data-qa="project-help-text">
-              Enter the full path to your Katalon Studio project directory
+              Enter the full path to your Katalon Studio project directory<br></br>
+              <br></br>
+              <b>Example: </b><i>/Users/christopherscharer/Katalon Studio/onboarding</i>
             </Form.Text>
           </Form.Group>
         </Form>

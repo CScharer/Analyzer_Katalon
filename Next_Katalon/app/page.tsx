@@ -65,6 +65,8 @@ export default function Home(): JSX.Element {
               <h4 className="mt-3" data-qa="empty-state-title">Select a project to begin analysis</h4>
               <p className="text-muted" data-qa="empty-state-text">
                 Enter the full path to your Katalon Studio project directory
+                <br></br>
+                <b>Example: </b><i>/Users/christopherscharer/Katalon Studio/onboarding</i>
               </p>
             </div>
           </div>
